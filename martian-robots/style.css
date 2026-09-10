@@ -1,0 +1,61 @@
+/* Deliberately restrained for M3 — the arcade treatment is milestone M7.
+   No animations or transitions: determinism is a published UI-contract
+   guarantee, and M7's juice must arrive behind the same guarantee. */
+:root {
+  --ink: #1c1e21;
+  --paper: #fafafa;
+  --accent: #b32d2d;
+  --line: #d0d0d0;
+  font-family: system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--paper); }
+main { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+h1 { margin: 0 0 .25rem; }
+.tagline { margin-top: 0; color: #555; }
+
+[role="tablist"] { display: flex; gap: .5rem; margin: 1.5rem 0 1rem; }
+[role="tab"] {
+  padding: .5rem 1rem; border: 1px solid var(--line); background: white;
+  cursor: pointer; border-radius: .375rem .375rem 0 0;
+}
+[role="tab"][aria-selected="true"] {
+  border-bottom-color: white; font-weight: 600; color: var(--accent);
+}
+
+textarea {
+  width: 100%; font-family: ui-monospace, monospace; font-size: .95rem;
+  padding: .5rem; border: 1px solid var(--line); border-radius: .375rem;
+}
+.row { display: flex; gap: .5rem; margin: .75rem 0; align-items: center; flex-wrap: wrap; }
+button {
+  padding: .45rem .9rem; border: 1px solid var(--line); border-radius: .375rem;
+  background: white; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+pre {
+  padding: .75rem; background: white; border: 1px solid var(--line);
+  border-radius: .375rem; overflow-x: auto;
+}
+pre.errors { border-color: var(--accent); color: var(--accent); }
+
+.grid {
+  display: grid; grid-template-columns: repeat(var(--cols), 2rem);
+  gap: 2px; margin: 1rem 0;
+}
+.cell {
+  width: 2rem; height: 2rem; background: white; border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; border-radius: .2rem;
+}
+.cell[data-scented="true"] { background: #f6e3b4; }
+.cell[data-robot="true"] { background: #dcebdc; }
+.cell[data-lost="true"] { outline: 2px solid var(--accent); }
+.status { min-height: 1.5em; font-weight: 600; }
+.hint { color: #555; }
+kbd {
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: .25rem;
+  padding: 0 .3rem; font-size: .85em; background: white;
+}
+footer { margin-top: 3rem; color: #555; font-size: .9rem; }
+input[type="number"] { width: 4rem; }

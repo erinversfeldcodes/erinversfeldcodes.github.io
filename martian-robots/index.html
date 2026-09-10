@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Martian Robots</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Martian Robots</h1>
+  <p class="tagline">The Red Badger challenge, simulated in your browser — the
+  same Rust core as the CLI, compiled to WebAssembly.</p>
+
+  <nav role="tablist" aria-label="Playground modes">
+    <button role="tab" id="tab-batch" data-testid="tab-batch"
+            aria-selected="true" aria-controls="panel-batch">Mission input</button>
+    <button role="tab" id="tab-arcade" data-testid="tab-arcade"
+            aria-selected="false" aria-controls="panel-arcade">Arcade</button>
+  </nav>
+
+  <section id="panel-batch" role="tabpanel" aria-labelledby="tab-batch">
+    <p>Paste a mission in the assignment's input format and run it.</p>
+    <textarea data-testid="batch-input" rows="10" spellcheck="false"
+              aria-label="Mission input"></textarea>
+    <div class="row">
+      <button data-testid="batch-run">Run mission</button>
+      <button data-testid="batch-sample" type="button">Load sample</button>
+    </div>
+    <pre data-testid="batch-output" aria-label="Mission output" hidden></pre>
+    <pre data-testid="batch-errors" class="errors" aria-label="Diagnostics" hidden></pre>
+  </section>
+
+  <section id="panel-arcade" role="tabpanel" aria-labelledby="tab-arcade" hidden>
+    <p>Drive one robot at a time. Scents you leave protect the robots that
+    come after — that's the whole game.</p>
+    <form data-testid="arcade-setup" class="row">
+      <label>World <input data-testid="arcade-max-x" type="number" min="0" max="50" value="5" aria-label="Maximum x"> ×
+        <input data-testid="arcade-max-y" type="number" min="0" max="50" value="3" aria-label="Maximum y"></label>
+      <button data-testid="arcade-create">New world</button>
+    </form>
+    <form data-testid="arcade-land-form" class="row" hidden>
+      <label>Land at <input data-testid="arcade-land-x" type="number" min="0" max="50" value="0" aria-label="Landing x">,
+        <input data-testid="arcade-land-y" type="number" min="0" max="50" value="0" aria-label="Landing y"> facing
+        <select data-testid="arcade-land-orientation" aria-label="Orientation">
+          <option>N</option><option>E</option><option>S</option><option>W</option>
+        </select></label>
+      <button data-testid="arcade-land">Land robot</button>
+    </form>
+    <div data-testid="arcade-grid" class="grid" aria-label="The world" hidden></div>
+    <p data-testid="arcade-status" class="status" aria-live="polite"></p>
+    <p class="hint">Keys: <kbd>←</kbd> turn left · <kbd>→</kbd> turn right ·
+      <kbd>↑</kbd> forward (also <kbd>L</kbd>/<kbd>R</kbd>/<kbd>F</kbd>)</p>
+  </section>
+
+  <footer>
+    <p>Deep module, thin adapters: this page and the CLI share one core crate.
+    Contract, rulings, and the sealed test suite are described in the
+    repository.</p>
+  </footer>
+</main>
+<script type="module" src="main.js"></script>
+</body>
+</html>
