@@ -34,12 +34,12 @@
   <section id="panel-arcade" role="tabpanel" aria-labelledby="tab-arcade" hidden>
     <p>Drive one robot at a time. Scents you leave protect the robots that
     come after — that's the whole game.</p>
-    <form data-testid="arcade-setup" class="row">
+    <form data-testid="arcade-setup" class="row" novalidate>
       <label>World <input data-testid="arcade-max-x" type="number" min="0" max="50" value="5" aria-label="Maximum x"> ×
         <input data-testid="arcade-max-y" type="number" min="0" max="50" value="3" aria-label="Maximum y"></label>
       <button data-testid="arcade-create">New world</button>
     </form>
-    <form data-testid="arcade-land-form" class="row" hidden>
+    <form data-testid="arcade-land-form" class="row" hidden novalidate>
       <label>Land at <input data-testid="arcade-land-x" type="number" min="0" max="50" value="0" aria-label="Landing x">,
         <input data-testid="arcade-land-y" type="number" min="0" max="50" value="0" aria-label="Landing y"> facing
         <select data-testid="arcade-land-orientation" aria-label="Orientation">
