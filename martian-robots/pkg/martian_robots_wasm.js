@@ -66,8 +66,9 @@ export class Arcade {
         }
     }
     /**
-     * Where the last robot was lost, as `"x y O"` — the arcade's LOST
-     * marker — or `None` if the current robot is alive or none landed.
+     * Where the last robot was lost in this world, as `"x y O"`, or `None`
+     * if no robot has been lost yet. Persists across landings and migrates
+     * to the newest loss.
      * @returns {string | undefined}
      */
     last_lost() {
