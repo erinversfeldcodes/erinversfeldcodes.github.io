@@ -8,7 +8,7 @@
 </head>
 <body>
 <main>
-  <h1>Martian Robots</h1>
+  <h1>MARTIAN ROBOTS</h1>
   <p class="tagline">The Red Badger challenge, simulated in your browser — the
   same Rust core as the CLI, compiled to WebAssembly.</p>
 
@@ -32,8 +32,16 @@
   </section>
 
   <section id="panel-arcade" role="tabpanel" aria-labelledby="tab-arcade" hidden>
-    <p>Drive one robot at a time. Scents you leave protect the robots that
-    come after — that's the whole game.</p>
+    <div class="row between">
+      <p>Drive one robot at a time. Scents you leave protect the robots that
+      come after — that's the whole game.</p>
+      <!-- Off on load, always. Pressing it on is the only thing on this page
+           that may issue a network request (UI contract 0.2.0 §1). Disabled
+           outright under ?test=1 / reduced motion, so under test the page is
+           network-silent after load exactly as 0.1.1 promised. -->
+      <button data-testid="sound-toggle" type="button" class="toggle"
+              aria-pressed="false" aria-label="Sound">SOUND: OFF</button>
+    </div>
     <form data-testid="arcade-setup" class="row" novalidate>
       <label>World <input data-testid="arcade-max-x" type="number" min="0" max="50" value="5" aria-label="Maximum x"> ×
         <input data-testid="arcade-max-y" type="number" min="0" max="50" value="3" aria-label="Maximum y"></label>
@@ -47,7 +55,14 @@
         </select></label>
       <button data-testid="arcade-land">Land robot</button>
     </form>
-    <div data-testid="arcade-grid" class="grid" aria-label="The world" hidden></div>
+    <!-- The stage: the grid is the contract surface (one child per cell, all
+         state as data-* attributes, updated synchronously). The two sprites
+         are decoration positioned over it — they tween, the grid never does. -->
+    <div class="stage">
+      <div data-testid="arcade-grid" class="grid" aria-label="The world" hidden></div>
+      <img class="sprite robot" src="assets/sprites/robot.png" alt="" hidden>
+      <img class="sprite burst" src="assets/sprites/burst.png" alt="" hidden>
+    </div>
     <p data-testid="arcade-status" class="status" aria-live="polite"></p>
     <p class="hint">Keys: <kbd>←</kbd> turn left · <kbd>→</kbd> turn right ·
       <kbd>↑</kbd> forward (also <kbd>L</kbd>/<kbd>R</kbd>/<kbd>F</kbd>)</p>
@@ -57,8 +72,12 @@
     <p>Deep module, thin adapters: this page and the CLI share one core crate.
     Contract, rulings, and the sealed test suite are described in the
     repository.</p>
+    <p class="credits">Sprites and sound effects by
+      <a href="https://kenney.nl">Kenney</a> · music by
+      <a href="https://opengameart.org/content/8-bit-epic-space-shooter-music">HydroGene</a>
+      · all CC0. Provenance in <code>ASSETS.md</code>.</p>
     <p class="build">Built from commit
-      <code data-testid="build-commit">6fcdacb</code>.</p>
+      <code data-testid="build-commit">7c400fe</code>.</p>
   </footer>
 </main>
 <script type="module" src="main.js"></script>
