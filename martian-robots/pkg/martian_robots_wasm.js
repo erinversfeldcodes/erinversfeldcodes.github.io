@@ -66,19 +66,28 @@ export class Arcade {
         }
     }
     /**
-     * Where the last robot was lost in this world, as `"x y O"`, or `None`
-     * if no robot has been lost yet. Persists across landings and migrates
-     * to the newest loss.
+     * The orientation the last lost robot was facing, if any robot has been.
      * @returns {string | undefined}
      */
-    last_lost() {
-        const ret = wasm.arcade_last_lost(this.__wbg_ptr);
-        let v1;
-        if (ret[0] !== 0) {
-            v1 = getStringFromWasm0(ret[0], ret[1]);
-            wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
-        }
-        return v1;
+    last_lost_orientation() {
+        const ret = wasm.arcade_last_lost_orientation(this.__wbg_ptr);
+        return ret === 0xFFFFFF ? undefined : String.fromCodePoint(ret);
+    }
+    /**
+     * The x of the cell the last robot was lost from, if any robot has been.
+     * @returns {number | undefined}
+     */
+    last_lost_x() {
+        const ret = wasm.arcade_last_lost_x(this.__wbg_ptr);
+        return ret === 0xFFFFFF ? undefined : ret;
+    }
+    /**
+     * The y of the cell the last robot was lost from, if any robot has been.
+     * @returns {number | undefined}
+     */
+    last_lost_y() {
+        const ret = wasm.arcade_last_lost_y(this.__wbg_ptr);
+        return ret === 0xFFFFFF ? undefined : ret;
     }
     /**
      * The world's maximum x-coordinate.
@@ -101,7 +110,7 @@ export class Arcade {
      *
      * # Errors
      *
-     * Rejects coordinates above the contract maximum of 50.
+     * Rejects coordinates above the contract maximum of 50 (R5).
      * @param {number} max_x
      * @param {number} max_y
      */
@@ -115,38 +124,81 @@ export class Arcade {
         return this;
     }
     /**
-     * Executes one instruction letter on the active robot; returns the step
-     * outcome as `"ongoing"`, `"ignored"` or `"lost"`.
+     * Executes one instruction letter on the active robot.
      *
      * # Errors
      *
      * Rejects an unknown instruction letter (ruling R7) or stepping with no
      * active robot.
      * @param {string} instruction
-     * @returns {string}
+     * @returns {StepOutcome}
      */
     step(instruction) {
-        let deferred3_0;
-        let deferred3_1;
-        try {
-            const char0 = instruction.codePointAt(0);
-            _assertChar(char0);
-            const ret = wasm.arcade_step(this.__wbg_ptr, char0);
-            var ptr2 = ret[0];
-            var len2 = ret[1];
-            if (ret[3]) {
-                ptr2 = 0; len2 = 0;
-                throw takeFromExternrefTable0(ret[2]);
-            }
-            deferred3_0 = ptr2;
-            deferred3_1 = len2;
-            return getStringFromWasm0(ptr2, len2);
-        } finally {
-            wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+        const char0 = instruction.codePointAt(0);
+        _assertChar(char0);
+        const ret = wasm.arcade_step(this.__wbg_ptr, char0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return ret[0];
     }
 }
 if (Symbol.dispose) Arcade.prototype[Symbol.dispose] = Arcade.prototype.free;
+
+/**
+ * What one arcade step did, as the core's [`Step`] reports it.
+ * @enum {0 | 1 | 2}
+ */
+export const StepOutcome = Object.freeze({
+    /**
+     * The robot turned or moved and is still on the world.
+     */
+    Ongoing: 0, "0": "Ongoing",
+    /**
+     * A world-leaving move from a scented cell was ignored (R9).
+     */
+    Ignored: 1, "1": "Ignored",
+    /**
+     * The robot left the world; land the next one.
+     */
+    Lost: 2, "2": "Lost",
+});
+
+/**
+ * The instruction letters the core accepts, in order — what the arcade binds
+ * letter keys to.
+ * @returns {string}
+ */
+export function instruction_letters() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+        const ret = wasm.instruction_letters();
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+}
+
+/**
+ * The orientation letters the core accepts, in compass order — what the
+ * arcade offers as landing orientations.
+ * @returns {string}
+ */
+export function orientation_letters() {
+    let deferred1_0;
+    let deferred1_1;
+    try {
+        const ret = wasm.orientation_letters();
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+    }
+}
 
 /**
  * The batch pipeline: contract input text in, contract output text out.

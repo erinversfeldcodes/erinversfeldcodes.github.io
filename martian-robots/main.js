@@ -7,7 +7,13 @@
 // writes every data-* attribute synchronously from the core's answer, and
 // only THEN does a sprite tween towards the cell the grid already shows. A
 // half-finished tween can never be the reason a hook reads differently.
-import init, { simulate, Arcade } from "./pkg/martian_robots_wasm.js";
+import init, {
+  simulate,
+  Arcade,
+  StepOutcome,
+  instruction_letters,
+  orientation_letters,
+} from "./pkg/martian_robots_wasm.js";
 
 const $ = (id) => document.querySelector(`[data-testid="${id}"]`);
 
@@ -178,7 +184,7 @@ function initArcade(sound) {
     grid.style.setProperty("--cols", maxX + 1);
     grid.replaceChildren();
     const robotX = arcade.active_x(), robotY = arcade.active_y();
-    const lost = arcade.last_lost();
+    const lostX = arcade.last_lost_x(), lostY = arcade.last_lost_y();
     // Row maxY at the top: north points up.
     for (let y = maxY; y >= 0; y--) {
       for (let x = 0; x <= maxX; x++) {
@@ -192,11 +198,8 @@ function initArcade(sound) {
           cell.dataset.robot = "true";
           cell.dataset.orientation = arcade.active_orientation();
         }
-        if (lost) {
-          const [lx, ly] = lost.split(" ");
-          if (Number(lx) === x && Number(ly) === y && !cell.dataset.robot) {
-            cell.dataset.lost = "true";
-          }
+        if (lostX === x && lostY === y && !cell.dataset.robot) {
+          cell.dataset.lost = "true";
         }
         grid.appendChild(cell);
       }
@@ -240,7 +243,12 @@ function initArcade(sound) {
     }
   });
 
-  const KEYS = { ArrowLeft: "L", ArrowRight: "R", ArrowUp: "F", l: "L", r: "R", f: "F", L: "L", R: "R", F: "F" };
+  // Letter keys are whatever letters the core accepts, either case; the
+  // arrows are this page's own bindings for the three turn-and-move commands.
+  const KEYS = { ArrowLeft: "L", ArrowRight: "R", ArrowUp: "F" };
+  for (const letter of instruction_letters()) {
+    KEYS[letter] = KEYS[letter.toLowerCase()] = letter;
+  }
   document.addEventListener("keydown", (e) => {
     if (document.getElementById("panel-arcade").hidden || !arcade) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
@@ -248,11 +256,11 @@ function initArcade(sound) {
     if (!instruction) return;
     e.preventDefault();
     try {
-      const before = arcade.last_lost();
       const outcome = arcade.step(instruction);
-      if (outcome === "lost") {
-        say(`Robot LOST at ${arcade.last_lost()} — its scent now guards that cell. Land the next robot.`);
-      } else if (outcome === "ignored") {
+      if (outcome === StepOutcome.Lost) {
+        const at = `${arcade.last_lost_x()} ${arcade.last_lost_y()} ${arcade.last_lost_orientation()}`;
+        say(`Robot LOST at ${at} — its scent now guards that cell. Land the next robot.`);
+      } else if (outcome === StepOutcome.Ignored) {
         say("Scent! The fatal move was ignored.");
       } else {
         say("");
@@ -262,11 +270,10 @@ function initArcade(sound) {
         if (instruction === "R") spin += 90;
       }
       render();
-      if (outcome === "lost") {
-        const [lx, ly] = arcade.last_lost().split(" ");
-        if (arcade.last_lost() !== before) flashBurst(Number(lx), Number(ly));
+      if (outcome === StepOutcome.Lost) {
+        flashBurst(arcade.last_lost_x(), arcade.last_lost_y());
         sound.play("lost");
-      } else if (outcome === "ignored") {
+      } else if (outcome === StepOutcome.Ignored) {
         sound.play("ignored");
       } else {
         sound.play(instruction === "F" ? "move" : "turn");
@@ -278,7 +285,11 @@ function initArcade(sound) {
 }
 
 await init();
-document.documentElement.dataset.ready = "true";
+// The landing orientations are the core's, in its order.
+$("arcade-land-orientation").replaceChildren(
+  ...Array.from(orientation_letters(), (letter) => new Option(letter)),
+);
 initTabs();
 initBatch();
 initArcade(initSound());
+document.documentElement.dataset.ready = "true";

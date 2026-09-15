@@ -6,9 +6,8 @@
 <title>Martian Robots</title>
 <link rel="stylesheet" href="style.css">
 <!-- An inline icon, so the browser never issues the GET /favicon.ico that a
-     page without one always does. That request was outside UI contract
-     0.2.0 §1's permitted class and returned 404 on the live host; the M7
-     evaluation found it. A data: URI cannot be a request. -->
+     page without one always does: that request is outside UI contract 0.2.0
+     §1's permitted class. A data: URI cannot be a request. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23050a06'/%3E%3Cpath fill='%2341ff5a' d='M5 4h1v1H5zM10 4h1v1h-1zM6 5h4v1H6zM4 6h8v1H4zM3 7h10v1H3zM3 8h2v1H3zM6 8h4v1H6zM11 8h2v1h-2zM4 9h1v1H4zM11 9h1v1h-1z'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -55,9 +54,7 @@
     <form data-testid="arcade-land-form" class="row" hidden novalidate>
       <label>Land at <input data-testid="arcade-land-x" type="number" min="0" max="50" value="0" aria-label="Landing x">,
         <input data-testid="arcade-land-y" type="number" min="0" max="50" value="0" aria-label="Landing y"> facing
-        <select data-testid="arcade-land-orientation" aria-label="Orientation">
-          <option>N</option><option>E</option><option>S</option><option>W</option>
-        </select></label>
+        <select data-testid="arcade-land-orientation" aria-label="Orientation"></select></label>
       <button data-testid="arcade-land">Land robot</button>
     </form>
     <!-- The stage: the grid is the contract surface (one child per cell, all
@@ -82,7 +79,7 @@
       <a href="https://opengameart.org/content/8-bit-epic-space-shooter-music">HydroGene</a>
       · all CC0. Provenance in <code>ASSETS.md</code>.</p>
     <p class="build">Built from commit
-      <code data-testid="build-commit">5dbfadd</code>.</p>
+      <code data-testid="build-commit">39b23a0</code>.</p>
   </footer>
 </main>
 <script type="module" src="main.js"></script>
