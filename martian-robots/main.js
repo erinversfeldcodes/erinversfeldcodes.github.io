@@ -123,6 +123,14 @@ function initSound() {
   };
 }
 
+// An empty field is not zero: `Number("")` is 0, which quietly built a 1x1
+// world. NaN reaches the adapter, which refuses it like any other value that
+// is not a coordinate.
+const number = (id) => {
+  const raw = $(id).value.trim();
+  return raw === "" ? Number.NaN : Number(raw);
+};
+
 function initArcade(sound) {
   let arcade = null;
   const grid = $("arcade-grid");
@@ -216,7 +224,7 @@ function initArcade(sound) {
   $("arcade-setup").addEventListener("submit", (e) => {
     e.preventDefault();
     try {
-      arcade = new Arcade(Number($("arcade-max-x").value), Number($("arcade-max-y").value));
+      arcade = new Arcade(number("arcade-max-x"), number("arcade-max-y"));
       $("arcade-land-form").hidden = false;
       robot.hidden = burst.hidden = true;
       say("World ready. Land a robot.");
@@ -230,8 +238,8 @@ function initArcade(sound) {
     e.preventDefault();
     try {
       arcade.land(
-        Number($("arcade-land-x").value),
-        Number($("arcade-land-y").value),
+        number("arcade-land-x"),
+        number("arcade-land-y"),
         $("arcade-land-orientation").value,
       );
       spin = BASE[arcade.active_orientation()];

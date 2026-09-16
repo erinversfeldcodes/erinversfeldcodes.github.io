@@ -37,7 +37,8 @@ export class Arcade {
         return ret === 0xFFFFFF ? undefined : ret;
     }
     /**
-     * Whether a cell carries the scent of a lost robot.
+     * Whether a cell carries the scent of a lost robot. A cell the world does
+     * not have is simply unscented, so the renderer may ask about any cell.
      * @param {number} x
      * @param {number} y
      * @returns {boolean}
@@ -51,16 +52,17 @@ export class Arcade {
      *
      * # Errors
      *
-     * Rejects off-grid coordinates (ruling R1) or an unknown orientation
-     * letter (ruling R7).
+     * Rejects a coordinate that is not a whole number from 0 to 255 or an
+     * orientation that is not one letter, and then whatever the core
+     * rejects: off-grid coordinates (R1), an unknown letter (R7).
      * @param {number} x
      * @param {number} y
      * @param {string} orientation
      */
     land(x, y, orientation) {
-        const char0 = orientation.codePointAt(0);
-        _assertChar(char0);
-        const ret = wasm.arcade_land(this.__wbg_ptr, x, y, char0);
+        const ptr0 = passStringToWasm0(orientation, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.arcade_land(this.__wbg_ptr, x, y, ptr0, len0);
         if (ret[1]) {
             throw takeFromExternrefTable0(ret[0]);
         }
@@ -110,7 +112,8 @@ export class Arcade {
      *
      * # Errors
      *
-     * Rejects coordinates above the contract maximum of 50 (R5).
+     * Rejects a coordinate that is not a whole number from 0 to 255, and
+     * then whatever the core rejects: above the contract maximum of 50 (R5).
      * @param {number} max_x
      * @param {number} max_y
      */
@@ -128,15 +131,16 @@ export class Arcade {
      *
      * # Errors
      *
-     * Rejects an unknown instruction letter (ruling R7) or stepping with no
-     * active robot.
+     * Rejects an instruction that is not one letter, and then whatever the
+     * core rejects: an unknown letter (R7), or stepping with no active
+     * robot.
      * @param {string} instruction
      * @returns {StepOutcome}
      */
     step(instruction) {
-        const char0 = instruction.codePointAt(0);
-        _assertChar(char0);
-        const ret = wasm.arcade_step(this.__wbg_ptr, char0);
+        const ptr0 = passStringToWasm0(instruction, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.arcade_step(this.__wbg_ptr, ptr0, len0);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -259,10 +263,6 @@ function __wbg_get_imports() {
 const ArcadeFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_arcade_free(ptr, 1));
-
-function _assertChar(c) {
-    if (typeof(c) === 'number' && (c >= 0x110000 || (c >= 0xD800 && c < 0xE000))) throw new Error(`expected a valid Unicode scalar value, found ${c}`);
-}
 
 function getStringFromWasm0(ptr, len) {
     return decodeText(ptr >>> 0, len);
